@@ -26,19 +26,24 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         offlinemode.cpp \
-    onlinemode.cpp
+        onlinemode.cpp \
+        track.cpp
 
 HEADERS += \
         mainwindow.h \
         offlinemode.h \
-    onlinemode.h
+        onlinemode.h \
+        track.h
 
 FORMS += \
         mainwindow.ui \
         offlinemode.ui \
-    onlinemode.ui
+        onlinemode.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+# Linking TagLib library
+unix:!macx: LIBS += -ltag
