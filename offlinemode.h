@@ -21,9 +21,18 @@ public:
     ~OfflineMode();
 
     void playTrack(const Track& track);
+    void setCurrentTime(int position);
+
+    void setUp();
+    void setCoverArt(const Track& track);
 
 public slots:
     void playPause();
+
+private slots:
+    void on_progressSlider_sliderMoved(int position);
+    void on_positionChanged(int position);
+    void on_durationChanged(int position);
 
 private:
     Ui::OfflineMode *ui;
