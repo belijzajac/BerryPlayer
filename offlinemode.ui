@@ -6,16 +6,52 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
-    <height>378</height>
+    <width>350</width>
+    <height>530</height>
    </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>350</width>
+    <height>530</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QLabel" name="artLabel">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>350</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>350</width>
+       <height>350</height>
+      </size>
+     </property>
      <property name="text">
       <string>artist art goes here</string>
      </property>
@@ -73,7 +109,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="horizontalSlider">
+          <widget class="QSlider" name="progressSlider">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
