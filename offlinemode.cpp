@@ -3,17 +3,23 @@
 
 #include <QTimer>
 #include <QDir>
+#include <QFileDialog>
+#include <QDirIterator>
 #include <QStandardPaths>
+
+int OfflineMode::play_pause_count = 0;
 
 OfflineMode::OfflineMode(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OfflineMode),
     m_volume(30),
-    m_player(nullptr)
+    m_song_index(0),
+    m_player(nullptr),
+    m_albumList(nullptr)
 {
     ui->setupUi(this);
     this->setWindowTitle("BerryPlayer | Offline");
-    this->setFixedSize(QSize(350, 530));
+    this->setFixedSize(QSize(600, 530));
 
     // Set up default stuff
     setUp();
@@ -22,21 +28,55 @@ OfflineMode::OfflineMode(QWidget *parent) :
     m_player = std::make_unique<QMediaPlayer>();
     m_player->setVolume(m_volume);
 
+    // Album tracks list widget
+    m_albumList = std::make_unique<AlbumWidget>();
+
     // Connecting media player
     connect(m_player.get(), &QMediaPlayer::positionChanged, this, &OfflineMode::on_positionChanged);
     connect(m_player.get(), &QMediaPlayer::durationChanged, this, &OfflineMode::on_durationChanged);
 
-    // Add some tracks to play
-    m_tracks.push_back(std::make_unique<Track>("/home/tautvydas/Music/input with spaces.mp3"));
-
     // Connect play button
     connect(ui->playButton, &QPushButton::clicked,
             this, &OfflineMode::playPause);
+
+    // Connect next track button
+    connect(ui->nextButton, &QPushButton::clicked,
+            this, &OfflineMode::nextButtonClicked);
+
+    // Connect previous track button
+    connect(ui->previousButton, &QPushButton::clicked,
+            this, &OfflineMode::previousButtonClicked);
+
+    // Connect album selection button
+    connect(ui->selectAlbumButton, &QPushButton::clicked,
+            this, &OfflineMode::selectAlbumLocation);
 }
 
 OfflineMode::~OfflineMode()
 {
     delete ui;
+}
+
+void OfflineMode::selectAlbumLocation()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                 QDir::homePath(),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+
+    // Go through files recursively
+    int track_num = 0;
+    QDirIterator it(dir, QStringList() << "*.mp3", QDir::Files);
+    while(it.hasNext()){
+        m_tracks.push_back(std::make_unique<Track>(it.next()));
+
+        // Connect a track with its states
+        connect(m_tracks[track_num].get(), &Track::stateChanged,
+                this, &OfflineMode::updateState);
+
+        m_albumList->displayTrack(m_tracks.size() - 1, it.next());
+        track_num++;
+    }
 }
 
 // Set ups various stuff
@@ -54,11 +94,59 @@ void OfflineMode::setUp()
     }
 }
 
+// 1st click ==> play, 2nd click ==> stop
+void OfflineMode::play_pause_state()
+{
+    ++play_pause_count;
+
+    if(play_pause_count == 1){
+        m_tracks[m_song_index]->setState( Track::State::PLAYING );
+    }
+    else if(play_pause_count == 2){
+        play_pause_count = 0;
+        m_tracks[m_song_index]->setState( Track::State::STOPPED );
+    }
+}
+
 // Play button
 void OfflineMode::playPause()
 {
-    // testing
-    playTrack(*m_tracks[0].get());
+    if(m_tracks.size() > 0){
+        play_pause_state();
+    }
+}
+
+void OfflineMode::nextButtonClicked()
+{
+    if(m_tracks.size() > 0 && m_song_index + 1 < m_tracks.size()){
+
+        ++m_song_index;
+        m_tracks[m_song_index]->setState( Track::State::PLAYING );
+    }
+}
+
+void OfflineMode::previousButtonClicked()
+{
+    if(m_tracks.size() > 0 && m_song_index - 1 >= 0){
+
+        --m_song_index;
+        m_tracks[m_song_index]->setState( Track::State::PLAYING );
+    }
+}
+
+void OfflineMode::updateState(const Track::State &state)
+{
+    switch (state) {
+        case Track::State::PLAYING:
+          ui->playButton->setIcon(QIcon(":/icons/pause.png"));
+          playTrack(*m_tracks[m_song_index].get());
+          break;
+
+        case Track::State::STOPPED:
+            ui->playButton->setIcon(QIcon(":/icons/play.png"));
+            m_player->stop();
+            break;
+    }
 }
 
 // When the slider is manually moved

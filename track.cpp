@@ -6,10 +6,12 @@
 #include <QDir>
 #include <QProcess>
 
-Track::Track(const QString &file_location) :
+Track::Track(const QString &file_location, QObject *parent) :
+    QObject(parent),
     m_file_location(file_location),
     curr_min(0),
-    curr_sec(0)
+    curr_sec(0),
+    m_state(State::STOPPED)
 {
     QByteArray ba = file_location.toLatin1();
     const char *_file = ba.data();
@@ -52,4 +54,10 @@ void Track::getCoverArt()
 
     // Set art cover location
     m_art_location = dir + file_name;
+}
+
+void Track::setState(Track::State state)
+{
+    m_state = state;
+    emit stateChanged(m_state);
 }
