@@ -1,14 +1,21 @@
 #ifndef TRACK_H
 #define TRACK_H
 
+#include <QObject>
+
 #include <QString>
 #include <QImage>
 
-class Track
+class Track : public QObject
 {
+    Q_OBJECT
 public:
-    Track() = default;
-    Track(const QString &file_location);
+    enum class State {
+        STOPPED,
+        PLAYING
+    };
+
+    Track(const QString &file_location, QObject *parent = 0);
 
     const QString getFileLocation() const { return m_file_location; }
     const QString getArtLocation() const { return m_art_location; }
@@ -17,8 +24,15 @@ public:
     const QString getAlbum() const { return m_album; }
     int getTotalMinutes() const { return m_minutes; }
     int getTotalSeconds() const { return m_seconds; }
-
     void getCoverArt();
+
+    State getState() const { return m_state; }
+
+signals:
+    void stateChanged(State state);
+
+public:
+    void setState(State state);
 
 private:
     // Basic information about track
@@ -26,6 +40,8 @@ private:
     QString m_title, m_artist, m_album;
     int m_minutes, m_seconds;
     int curr_min, curr_sec;
+
+    State m_state;
 };
 
 #endif // TRACK_H
