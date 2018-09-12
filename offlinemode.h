@@ -2,12 +2,12 @@
 #define OFFLINEMODE_H
 
 #include "track.h"
-#include "albumwidget.h"
 
 #include <QWidget>
 #include <QtMultimedia/QMediaPlayer>
 #include <memory>
 #include <vector>
+#include <QListWidgetItem>
 
 namespace Ui {
 class OfflineMode;
@@ -23,7 +23,6 @@ public:
 
     void playTrack(const Track& track);
     void setCurrentTime(int position);
-
     void setUp();
     void setCoverArt(const Track& track);
 
@@ -35,6 +34,7 @@ public slots:
     void selectAlbumLocation();
     void nextButtonClicked();
     void previousButtonClicked();
+    void onTrackSingleClicked(QListWidgetItem* item);
 
 private slots:
     void on_progressSlider_sliderMoved(int position);
@@ -46,11 +46,11 @@ private:
     Ui::OfflineMode *ui;
 
     // Music player
-    int m_volume, m_song_index;
+    int m_volume,     // volume of QMediaPlayer
+        m_song_index; // index of a currently playing track
     std::unique_ptr<QMediaPlayer> m_player;
 
     std::vector<std::unique_ptr<Track>> m_tracks; // Holds tracks
-    std::unique_ptr<AlbumWidget> m_albumList;     // To display tracks next to the player
 };
 
 #endif // OFFLINEMODE_H

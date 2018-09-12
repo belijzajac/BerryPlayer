@@ -6,7 +6,9 @@ AlbumWidget::AlbumWidget(QWidget *parent) :
     ui(new Ui::AlbumWidget)
 {
     ui->setupUi(this);
-    //ui->listWidget->addItem("hello?");
+
+    connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)),
+                this, SLOT(itemClickedToOfflinePl(QListWidgetItem*)));
 }
 
 AlbumWidget::~AlbumWidget()
@@ -16,5 +18,11 @@ AlbumWidget::~AlbumWidget()
 
 void AlbumWidget::displayTrack(int row, const QString &text)
 {
-    ui->listWidget->insertItem(row, text);
+    ui->listWidget->addItem(text);
+    ui->listWidget->update();
+}
+
+void AlbumWidget::itemClickedToOfflinePl(QListWidgetItem *item)
+{
+    emit itemClickedEmitToOfflinePl(item);
 }

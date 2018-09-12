@@ -36,7 +36,10 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="AlbumWidget" name="albumListWidget" native="true">
+    <widget class="AlbumWidget" name="albumWidget" native="true">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <widget class="QPushButton" name="selectAlbumButton">
       <property name="geometry">
        <rect>
@@ -266,6 +269,8 @@
     </widget>
    </item>
   </layout>
+  <zorder>playerFrame</zorder>
+  <zorder>albumWidget</zorder>
  </widget>
  <customwidgets>
   <customwidget>

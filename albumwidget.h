@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QString>
 
+#include <QListWidgetItem>
+
 namespace Ui {
 class AlbumWidget;
 }
@@ -17,6 +19,12 @@ public:
     ~AlbumWidget();
 
     void displayTrack(int row, const QString &text);
+
+signals:
+    void itemClickedEmitToOfflinePl(QListWidgetItem *item);
+
+public slots:
+    void itemClickedToOfflinePl(QListWidgetItem *item);
 
 private:
     Ui::AlbumWidget *ui;
