@@ -14,8 +14,7 @@ OfflineMode::OfflineMode(QWidget *parent) :
     ui(new Ui::OfflineMode),
     m_volume(30),
     m_song_index(0),
-    m_player(nullptr),
-    m_albumList(nullptr)
+    m_player(nullptr)
 {
     ui->setupUi(this);
     this->setWindowTitle("BerryPlayer | Offline");
@@ -27,9 +26,6 @@ OfflineMode::OfflineMode(QWidget *parent) :
     // Player
     m_player = std::make_unique<QMediaPlayer>();
     m_player->setVolume(m_volume);
-
-    // Album tracks list widget
-    m_albumList = std::make_unique<AlbumWidget>();
 
     // Connecting media player
     connect(m_player.get(), &QMediaPlayer::positionChanged, this, &OfflineMode::on_positionChanged);
@@ -50,6 +46,11 @@ OfflineMode::OfflineMode(QWidget *parent) :
     // Connect album selection button
     connect(ui->selectAlbumButton, &QPushButton::clicked,
             this, &OfflineMode::selectAlbumLocation);
+
+    // Connect a slot with a signal which is emitted when a mouse button is clicked
+    // on a particular QListWidgetItem
+    connect(ui->albumWidget, SIGNAL(itemClickedEmitToOfflinePl(QListWidgetItem *)),
+            this, SLOT(onTrackSingleClicked(QListWidgetItem *)));
 }
 
 OfflineMode::~OfflineMode()
@@ -74,9 +75,12 @@ void OfflineMode::selectAlbumLocation()
         connect(m_tracks[track_num].get(), &Track::stateChanged,
                 this, &OfflineMode::updateState);
 
-        m_albumList->displayTrack(m_tracks.size() - 1, it.next());
+        ui->albumWidget->displayTrack(track_num, m_tracks[track_num].get()->getArtist() + " - " + m_tracks[track_num].get()->getTitle());
         track_num++;
     }
+
+    if(track_num > 0 && !dir.isEmpty())
+        ui->selectAlbumButton->hide();
 }
 
 // Set ups various stuff
@@ -213,4 +217,22 @@ void OfflineMode::setCoverArt(const Track& track)
     QPixmap px(track.getArtLocation());
     px = px.scaled(QSize(350, 350));
     ui->artLabel->setPixmap(px);
+}
+
+// This slot is executed when an QListWidgetItem is double clicked
+void OfflineMode::onTrackSingleClicked(QListWidgetItem* item)
+{
+    int _ind = 0;
+    // Determine which item was clicked
+    for(auto &track : m_tracks){
+        if(track.get()->getArtist()  + " - " + track.get()->getTitle() == item->text()){
+            // Set state of previous track as stopped
+            m_tracks[m_song_index]->setState( Track::State::STOPPED );
+
+            // Now playing track:
+            m_song_index = _ind;
+            track.get()->setState( Track::State::PLAYING );
+        }
+        _ind++;
+    }
 }
