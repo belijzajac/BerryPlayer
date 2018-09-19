@@ -28,6 +28,7 @@ public:
 
     static int play_pause_count;
     void play_pause_state();
+    bool isTrackGood(Track &track);
 
 public slots:
     void playPause();
@@ -35,6 +36,7 @@ public slots:
     void nextButtonClicked();
     void previousButtonClicked();
     void onTrackSingleClicked(QListWidgetItem* item);
+    void onBufferChanged(int percentage);
 
 private slots:
     void on_progressSlider_sliderMoved(int position);

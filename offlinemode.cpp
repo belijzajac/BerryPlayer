@@ -31,6 +31,16 @@ OfflineMode::OfflineMode(QWidget *parent) :
     connect(m_player.get(), &QMediaPlayer::positionChanged, this, &OfflineMode::on_positionChanged);
     connect(m_player.get(), &QMediaPlayer::durationChanged, this, &OfflineMode::on_durationChanged);
 
+    // Connect playing track's position
+    connect(m_player.get(), &QMediaPlayer::positionChanged, this, [&](qint64 duration){
+        int ms = (m_tracks[m_song_index]->getTotalMinutes() * 60 + m_tracks[m_song_index]->getTotalSeconds()) * 1000;
+
+        // Play next track as timer runs out
+        if(duration >= ms)
+            emit nextButtonClicked();
+
+    });
+
     // Connect play button
     connect(ui->playButton, &QPushButton::clicked,
             this, &OfflineMode::playPause);
@@ -69,18 +79,38 @@ void OfflineMode::selectAlbumLocation()
     int track_num = 0;
     QDirIterator it(dir, QStringList() << "*.mp3", QDir::Files);
     while(it.hasNext()){
-        m_tracks.push_back(std::make_unique<Track>(it.next()));
+        // Create a track object
+        auto track = std::make_unique<Track>(it.next());
 
-        // Connect a track with its states
-        connect(m_tracks[track_num].get(), &Track::stateChanged,
-                this, &OfflineMode::updateState);
+        // Procceed only if the provided track has valid members
+        if(isTrackGood(*track.get())){
+            m_tracks.push_back(std::move(track)); // transfer ownership
 
-        ui->albumWidget->displayTrack(track_num, m_tracks[track_num].get()->getArtist() + " - " + m_tracks[track_num].get()->getTitle());
-        track_num++;
+            // Connect a track with its states
+            connect(m_tracks[track_num].get(), &Track::stateChanged,
+                    this, &OfflineMode::updateState);
+
+            ui->albumWidget->displayTrack(track_num, m_tracks[track_num].get()->getArtist() + " - " + m_tracks[track_num].get()->getTitle());
+            track_num++;
+        }
+        else
+            track.release(); // realease ownership of pointer
     }
 
+    // Hide the album selection button if there was atleast 1 track added
     if(track_num > 0 && !dir.isEmpty())
         ui->selectAlbumButton->hide();
+}
+
+bool OfflineMode::isTrackGood(Track &track){
+    if(track.getFileLocation().size() > 0 && track.getArtLocation().size() > 10 && track.getTitle().size() > 0 && track.getArtist().size() && track.getAlbum().size() > 0){
+        QPixmap pixmap = QPixmap(track.getArtLocation());
+
+        // If pixmap is a valid pixmap (has non-zero width and height and thus can be drawn)
+        if(!pixmap.isNull())
+            return true;
+    }
+    return false;
 }
 
 // Set ups various stuff
@@ -210,6 +240,7 @@ void OfflineMode::playTrack(const Track& track)
 
     // Play the song
     m_player->play();
+    //qDebug() << "buffer: " + QString(m_player->bufferStatus());
 }
 
 void OfflineMode::setCoverArt(const Track& track)
@@ -235,4 +266,9 @@ void OfflineMode::onTrackSingleClicked(QListWidgetItem* item)
         }
         _ind++;
     }
+}
+
+void OfflineMode::onBufferChanged(int percentage)
+{
+    qDebug() << "Buffer: " + QString::number(percentage);
 }
