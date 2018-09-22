@@ -2,6 +2,7 @@
 #define OFFLINEMODE_H
 
 #include "track.h"
+#include "lyrics.h"
 
 #include <QWidget>
 #include <QtMultimedia/QMediaPlayer>
@@ -29,6 +30,7 @@ public:
     static int play_pause_count;
     void play_pause_state();
     bool isTrackGood(Track &track);
+    friend QString trimString(QString &str);
 
 public slots:
     void playPause();
@@ -36,7 +38,7 @@ public slots:
     void nextButtonClicked();
     void previousButtonClicked();
     void onTrackSingleClicked(QListWidgetItem* item);
-    void onBufferChanged(int percentage);
+    void onLyricsButtonClicked();
 
 private slots:
     void on_progressSlider_sliderMoved(int position);
@@ -50,9 +52,9 @@ private:
     // Music player
     int m_volume,     // volume of QMediaPlayer
         m_song_index; // index of a currently playing track
-    std::unique_ptr<QMediaPlayer> m_player;
-
+    std::unique_ptr<QMediaPlayer> m_player;       // Media player
     std::vector<std::unique_ptr<Track>> m_tracks; // Holds tracks
+    Lyrics *m_lyrics;                             // Lyrics widget
 };
 
 #endif // OFFLINEMODE_H

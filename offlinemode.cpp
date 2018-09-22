@@ -14,7 +14,8 @@ OfflineMode::OfflineMode(QWidget *parent) :
     ui(new Ui::OfflineMode),
     m_volume(30),
     m_song_index(0),
-    m_player(nullptr)
+    m_player(nullptr),
+    m_lyrics(new Lyrics(parent))
 {
     ui->setupUi(this);
     this->setWindowTitle("BerryPlayer | Offline");
@@ -38,7 +39,6 @@ OfflineMode::OfflineMode(QWidget *parent) :
         // Play next track as timer runs out
         if(duration >= ms)
             emit nextButtonClicked();
-
     });
 
     // Connect play button
@@ -61,6 +61,12 @@ OfflineMode::OfflineMode(QWidget *parent) :
     // on a particular QListWidgetItem
     connect(ui->albumWidget, SIGNAL(itemClickedEmitToOfflinePl(QListWidgetItem *)),
             this, SLOT(onTrackSingleClicked(QListWidgetItem *)));
+
+    // Connect lyrics button
+    connect(ui->lyricsButton, &QPushButton::clicked,
+            this, &OfflineMode::onLyricsButtonClicked);
+
+    ui->lyricsButton->hide();
 }
 
 OfflineMode::~OfflineMode()
@@ -97,9 +103,11 @@ void OfflineMode::selectAlbumLocation()
             track.release(); // realease ownership of pointer
     }
 
-    // Hide the album selection button if there was atleast 1 track added
-    if(track_num > 0 && !dir.isEmpty())
+    // Hide the album selection button (and show lyrics button) if there was atleast 1 track added
+    if(track_num > 0 && !dir.isEmpty()){
         ui->selectAlbumButton->hide();
+        ui->lyricsButton->show();
+    }
 }
 
 bool OfflineMode::isTrackGood(Track &track){
@@ -240,7 +248,6 @@ void OfflineMode::playTrack(const Track& track)
 
     // Play the song
     m_player->play();
-    //qDebug() << "buffer: " + QString(m_player->bufferStatus());
 }
 
 void OfflineMode::setCoverArt(const Track& track)
@@ -268,7 +275,20 @@ void OfflineMode::onTrackSingleClicked(QListWidgetItem* item)
     }
 }
 
-void OfflineMode::onBufferChanged(int percentage)
+QString trimString(QString &str)
 {
-    qDebug() << "Buffer: " + QString::number(percentage);
+    // removes everything except alpha-numeric characters
+    return str.remove(QRegExp("[^A-Za-z0-9]"));
+}
+
+// Run this SLOT when an user click on the lyrics button
+void OfflineMode::onLyricsButtonClicked()
+{
+    QString artist = m_tracks[m_song_index]->getArtist();
+    trimString(artist);
+
+    QString title = m_tracks[m_song_index]->getTitle();
+    trimString(title);
+
+    m_lyrics->showLyrics(artist.toLower() + '/' + title.toLower());
 }
