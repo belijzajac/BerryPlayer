@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets multimedia
+QT       += core gui widgets multimedia webenginewidgets
 
 TARGET = BerryPlayer
 TEMPLATE = app
@@ -28,14 +28,16 @@ SOURCES += \
         offlinemode.cpp \
         onlinemode.cpp \
         track.cpp \
-        albumwidget.cpp
+        albumwidget.cpp \
+        lyrics.cpp
 
 HEADERS += \
         mainwindow.h \
         offlinemode.h \
         onlinemode.h \
         track.h \
-        albumwidget.h
+        albumwidget.h \
+        lyrics.h
 
 FORMS += \
         mainwindow.ui \
