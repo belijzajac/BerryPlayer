@@ -6,6 +6,7 @@
 * gstreamer >= 1.14.2
 * gst-plugins-good >= 1.14.2
 * taglib >= 1.11.1
+* ffmpeg
 
 For Arch Linux, the following should be enough:
 

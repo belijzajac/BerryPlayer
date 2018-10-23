@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>350</height>
+    <width>550</width>
+    <height>370</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,19 +23,24 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QLabel" name="imageLabel">
-       <property name="geometry">
-        <rect>
-         <x>50</x>
-         <y>20</y>
-         <width>161</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>here goes the logo...</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="imageLabel">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="res/resource.qrc">:/icons/logo.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
@@ -82,6 +87,8 @@
   <tabstop>OfflineButton</tabstop>
   <tabstop>OnlineButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="res/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
