@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     online_widget(nullptr)
 {
     ui->setupUi(this);
-    this->setFixedSize(QSize(530, 350));
+    this->setFixedSize(QSize(550, 370));
 
     connect(ui->OfflineButton, &QPushButton::clicked,
             this, &MainWindow::enter_offline);
