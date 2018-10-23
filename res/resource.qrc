@@ -5,5 +5,8 @@
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
         <file>icons/previous.png</file>
+        <file>icons/service_soundcloud.png</file>
+        <file>icons/service_spotify.png</file>
+        <file>icons/services_youtube.png</file>
     </qresource>
 </RCC>
