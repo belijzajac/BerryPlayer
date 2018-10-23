@@ -29,7 +29,8 @@ SOURCES += \
         onlinemode.cpp \
         track.cpp \
         albumwidget.cpp \
-        lyrics.cpp
+        lyrics.cpp \
+        onlineplayer.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,13 +38,15 @@ HEADERS += \
         onlinemode.h \
         track.h \
         albumwidget.h \
-        lyrics.h
+        lyrics.h \
+        onlineplayer.h
 
 FORMS += \
         mainwindow.ui \
         offlinemode.ui \
         onlinemode.ui \
-        albumwidget.ui
+        albumwidget.ui \
+        onlineplayer.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
